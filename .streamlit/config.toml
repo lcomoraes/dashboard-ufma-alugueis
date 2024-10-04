@@ -1,0 +1,6 @@
+[theme]
+primaryColor = "#FF6B6B"               # Cor principal: um vermelho coral vibrante.
+backgroundColor = "#F9F9F9"            # Cor de fundo: um branco suave, para um layout mais limpo.
+secondaryBackgroundColor = "#1F2937"   # Cor de fundo secundária: um azul-escuro/cinza quase preto para destacar painéis e seções importantes.
+textColor = "#111827"                  # Cor do texto: preto suave, garantindo excelente contraste e legibilidade.
+font = "sans serif"                     # Fonte escolhida: monospace, para um estilo moderno e técnico, diferenciando-se da fonte padrão.
