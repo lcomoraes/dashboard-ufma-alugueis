@@ -31,7 +31,7 @@ get-executionpolicy
 
 1. Clone o repositório em sua máquina local:
    ```bash
-   git clone https://github.com/hedleydarsh/dasboard_streamlit.git
+   git clone https://github.com/lcomoraes/dashboard-ufma-alugueis.git
    ```
 2. Navegue até o diretório do projeto:
    ```bash
