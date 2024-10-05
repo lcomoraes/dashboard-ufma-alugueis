@@ -35,7 +35,7 @@ get-executionpolicy
    ```
 2. Navegue até o diretório do projeto:
    ```bash
-   cd <diretorio-do-projeto/dasboard_streamlit>
+   cd <diretorio-do-projeto/dashboard-ufma-alugueis>
    ```
 3. Instale as dependências listadas no arquivo `requirements.txt`:
    ```bash
