@@ -14,7 +14,13 @@ def ler_dados():
     df = pd.read_csv("houses_to_rent_v2.csv")
     df['animal'] = df['animal'].replace({'acept': 'Sim', 'not acept': 'Não'})
     df['city'] = df['city'].astype(str)
+    
+    # Garantir que a coluna 'area' é numérica e filtrar valores nulos
+    df['area'] = pd.to_numeric(df['area'], errors='coerce')
+    df = df.dropna(subset=['area'])
+    
     return df
+
 
 # Função para aplicar filtros
 def aplicar_filtros(df):
@@ -77,8 +83,8 @@ def aplicar_filtros(df):
 
 
 # Função para gerar o gráfico de quantidade de casas por cidade
-def plotar_contagem_cidades(df_filtered):
-    city_count = df_filtered['city'].value_counts().reset_index()
+def plotar_contagem_cidades(data_frame_filtrado):
+    city_count = data_frame_filtrado['city'].value_counts().reset_index()
     city_count.columns = ['city', 'house_count']
     city_count = city_count.sort_values(by='house_count', ascending=False)
     
@@ -100,8 +106,8 @@ def plotar_contagem_cidades(df_filtered):
     return fig_cities
 
 # Função para gerar o gráfico de aluguel por quantidade de quartos e cidade
-def plotar_preço_por_quartos_cidade(df_filtered):
-    price_by_rooms_city = df_filtered.groupby(['rooms', 'city'])['rent amount (R$)'].mean().reset_index()
+def plotar_preço_por_quartos_cidade(data_frame_filtrado):
+    price_by_rooms_city = data_frame_filtrado.groupby(['rooms', 'city'])['rent amount (R$)'].mean().reset_index()
     
     fig_price_rooms_city = px.bar(
         price_by_rooms_city, 
@@ -123,8 +129,8 @@ def plotar_preço_por_quartos_cidade(df_filtered):
     return fig_price_rooms_city
 
 # Função para gerar o gráfico de média de área por cidade
-def plotar_area_por_cidade(df_filtered):
-    city_mean = df_filtered.groupby('city').agg({'area': 'mean'}).reset_index()
+def plotar_area_por_cidade(data_frame_filtrado):
+    city_mean = data_frame_filtrado.groupby('city').agg({'area': 'mean'}).reset_index()
     city_mean['formatted_area'] = city_mean['area'].apply(lambda x: f'{x:,.2f}'.replace(",", "X").replace(".", ",").replace("X", "."))
 
     fig_area = px.bar(
@@ -144,8 +150,8 @@ def plotar_area_por_cidade(df_filtered):
     return fig_area
 
 # Função para gerar o gráfico de média de aluguel por cidade
-def plotar_aluguel_por_cidade(df_filtered):
-    city_mean = df_filtered.groupby('city').agg({'rent amount (R$)': 'mean'}).reset_index()
+def plotar_aluguel_por_cidade(data_frame_filtrado):
+    city_mean = data_frame_filtrado.groupby('city').agg({'rent amount (R$)': 'mean'}).reset_index()
     city_mean['formatted_rent'] = city_mean['rent amount (R$)'].apply(lambda x: f'R$ {x:,.2f}'.replace(",", "X").replace(".", ",").replace("X", "."))
 
     fig_rent = px.line(
@@ -167,8 +173,8 @@ def plotar_aluguel_por_cidade(df_filtered):
     return fig_rent
 
 # Função para gerar o gráfico de pizza de proporção de animais
-def plotar_pizza_animais(df_filtered):
-    animal_proportion = df_filtered['animal'].value_counts().reset_index()
+def plotar_pizza_animais(data_frame_filtrado):
+    animal_proportion = data_frame_filtrado['animal'].value_counts().reset_index()
     animal_proportion.columns = ['Permissão de Animais', 'Contagem']
 
     fig_animal_pie = px.pie(
@@ -186,13 +192,13 @@ def plotar_pizza_animais(df_filtered):
     return fig_animal_pie
 
 # Função para gerar o gráfico de violino para a distribuição de valores
-def plotar_distribuição_aluguel(df_filtered):
+def plotar_distribuição_aluguel(data_frame_filtrado):
     # Retirar os outliers
-    df_filtered = remove_outliers(df_filtered, 'total (R$)')
+    data_frame_filtrado = remove_outliers(data_frame_filtrado, 'total (R$)')
 
     # Gráfico de Distribuição dos Valores Embutidos no Aluguel por Cidade
     fig_rent_distribution = px.violin(
-        df_filtered, 
+        data_frame_filtrado, 
         y='rent amount (R$)', 
         box=True, 
         points='all', 
@@ -223,34 +229,34 @@ def main():
     df = ler_dados()
 
     # Título do dashboard
-    st.title("Dashboard - Análise de Aluguel")
+    st.title("Análise de Aluguel")
 
     # Aplicar filtros aos dados
-    df_filtered = aplicar_filtros(df)
+    data_frame_filtrado = aplicar_filtros(df)
 
     # Verificar se há dados filtrados
-    if not df_filtered.empty:
+    if not data_frame_filtrado.empty:
         col1, col2 = st.columns(2)
         
         # Exibir gráficos
         with col1:
-            st.plotly_chart(plotar_contagem_cidades(df_filtered), use_container_width=True)
+            st.plotly_chart(plotar_contagem_cidades(data_frame_filtrado), use_container_width=True)
         
         with col2:
-            st.plotly_chart(plotar_preço_por_quartos_cidade(df_filtered), use_container_width=True)
+            st.plotly_chart(plotar_preço_por_quartos_cidade(data_frame_filtrado), use_container_width=True)
 
         col2, col3, col4 = st.columns(3)
         
         with col2:
-            st.plotly_chart(plotar_area_por_cidade(df_filtered), use_container_width=True)
+            st.plotly_chart(plotar_area_por_cidade(data_frame_filtrado), use_container_width=True)
 
         with col3:
-            st.plotly_chart(plotar_aluguel_por_cidade(df_filtered), use_container_width=True)
+            st.plotly_chart(plotar_aluguel_por_cidade(data_frame_filtrado), use_container_width=True)
         
         with col4:
-            st.plotly_chart(plotar_pizza_animais(df_filtered), use_container_width=True)
+            st.plotly_chart(plotar_pizza_animais(data_frame_filtrado), use_container_width=True)
             
-        st.plotly_chart(plotar_distribuição_aluguel(df_filtered), use_container_width=True)
+        st.plotly_chart(plotar_distribuição_aluguel(data_frame_filtrado), use_container_width=True)
     else:
         st.write("Nenhum dado disponível com os filtros aplicados.")
 
